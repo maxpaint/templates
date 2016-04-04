@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd/MMM/yyyy hh:mm:ss.S} %X{sessionId} %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="FILE" fileName="../logs/app.log" filePattern="../logs/app.log.%d{yyyy-MM-dd}" append="true">
+            <PatternLayout>
+                <Pattern>%d{dd/MMM/yyyy hh:mm:ss.S} %X{sessionId} %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="40 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="ERRORS_FILE" fileName="../logs/app_errors.log" filePattern="../logs/app_errors.log.%d{yyyy-MM-dd}" append="true">
+            <PatternLayout>
+                <Pattern>%d{dd/MMM/yyyy hh:mm:ss.S} [%t] %X{sessionId} %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="40 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- Async Appenders -->
+        <Async name="ASYNC_STDOUT" bufferSize="500">
+            <AppenderRef ref="STDOUT"/>
+        </Async>
+
+        <Async name="ASYNC_FILE" bufferSize="500">
+            <AppenderRef ref="FILE"/>
+        </Async>
+
+        <Async name="ASYNC_ERRORS_FILE" bufferSize="500">
+            <AppenderRef ref="ERRORS_FILE"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.maxdanylenko" level="INFO"/>
+
+        <!-- third party -->
+        <Logger name="org.hibernate.tool.hbm2ddl.TableMetadata" level="WARN"/>
+        <Logger name="org.springframework.security" level="WARN"/>
+        <Logger name="org.apache.commons.jexl2" level="ERROR" />
+        <Logger name="org.hibernate.loader.Loader" level="ERROR"/>
+        <Logger name="org.springframework" level="ERROR"/>
+        <Logger name="org.apache.commons" level="ERROR" />
+        <Logger name="org.hibernate" level="ERROR"/>
+        <Logger name="org.quartz" level="ERROR"/>
+
+        <Root level="INFO">
+            <AppenderRef ref="ASYNC_STDOUT"/>
+            <AppenderRef ref="ASYNC_FILE"/>
+            <AppenderRef ref="ASYNC_ERRORS_FILE" level="ERROR"/>
+        </Root>
+    </Loggers>
+</Configuration>

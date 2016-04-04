@@ -1,0 +1,25 @@
+apply plugin: 'war'
+
+war.archiveName = "web.war"
+
+configurations {
+    all*.exclude group: "log4j", module: "log4j"
+    all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
+
+dependencies {
+
+    compile project(':service')
+
+    providedCompile libs.servlet_api
+
+    compile libs.spring_aop
+
+    compile libs.spring_web
+
+    compile libs.logging
+
+    testCompile libs.testing
+}
+

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Scheduling configuration -->
+    <bean  class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="quartzProperties">
+            <map>
+                <entry key="org.quartz.threadPool.class" value="org.quartz.simpl.SimpleThreadPool" />
+                <entry key="org.quartz.jobStore.useProperties" value="true" />
+                <entry key="org.quartz.jobStore.class" value="org.quartz.impl.jdbcjobstore.JobStoreTX" />
+                <entry key="org.quartz.jobStore.tablePrefix" value="QRTZ_" />
+                <entry key="org.quartz.jobStore.isClustered" value="true" />
+                <entry key="org.quartz.jobStore.clusterCheckinInterval" value="20000" />
+                <entry key="org.quartz.jobStore.misfireThreshold" value="60000" />
+                <entry key="org.quartz.scheduler.instanceId" value="AUTO" />
+                <entry key="org.quartz.scheduler.instanceName" value="GeminiClusterQuartzScheduler" />
+            </map>
+        </property>
+        <property name="dataSource" ref="geminiDataSource" />
+        <property name="transactionManager" ref="geminiTxManager"/>
+
+        <property name="schedulerName" value="StagingQuartzScheduler"/>
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="autoStartup" value="true"/>
+        <property name="applicationContextSchedulerContextKey" value="service-config"/>
+        <property name="jobFactory">
+            <bean class="com.db.sau.gemini.service.scheduler.AutowiringSpringBeanJobFactory"/>
+        </property>
+        <property name="jobDetails">
+            <list>
+                <ref bean="emailSendJobDetail"/>
+                <ref bean="oldDataCleaner"/>
+            </list>
+        </property>
+
+        <property name="triggers">
+            <list>
+                <ref bean="emailSendCronTrigger"/>
+                <ref bean="oldDataCleaneTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="emailSendJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.db.sau.gemini.service.scheduler.job.EmailSendingJob"/>
+        <property name="durability" value="true"/>
+    </bean>
+
+    <bean id="emailSendCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="emailSendJobDetail" />
+        <property name="cronExpression" value="#{emailProperty.getProperty('emailSend')}" />
+    </bean>
+
+    <bean id="oldDataCleaner" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.db.sau.gemini.service.scheduler.job.OldDataCleanerJob"/>
+        <property name="durability" value="true"/>
+    </bean>
+
+    <bean id="oldDataCleaneTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="oldDataCleaner" />
+        <property name="cronExpression" value="#{cron.getProperty('gemini.old.data.cleaner')}" />
+    </bean>
+
+
+</beans>

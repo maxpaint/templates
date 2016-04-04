@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+    <changeSet author="maxDanylenko" id="1">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_BLOB_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="2">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_CALENDARS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CALENDAR_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOB" type="VARCHAR2(800 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="3">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_CRON_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CRON_EXPRESSION" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIME_ZONE_ID" type="VARCHAR2(320 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="4">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_FIRED_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTRY_ID" type="VARCHAR2(380 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRED_TIME" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SCHED_TIME" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATE" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR2(800 CHAR)"/>
+            <column name="JOB_GROUP" type="VARCHAR2(800 CHAR)"/>
+            <column name="IS_NONCONCURRENT" type="VARCHAR2(4 CHAR)"/>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR2(4 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="5">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_JOB_DETAILS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR2(1000 CHAR)"/>
+            <column name="JOB_CLASS_NAME" type="VARCHAR2(1000 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_DURABLE" type="VARCHAR2(4 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_NONCONCURRENT" type="VARCHAR2(4 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_UPDATE_DATA" type="VARCHAR2(4 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR2(4 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="6">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_LOCKS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCK_NAME" type="VARCHAR2(160 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="7">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_PAUSED_TRIGGER_GRPS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="8">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_SCHEDULER_STATE">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_CHECKIN_TIME" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKIN_INTERVAL" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="9">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_SIMPLE_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_COUNT" type="NUMBER(7, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_INTERVAL" type="NUMBER(12, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMES_TRIGGERED" type="NUMBER(10, 0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="10">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_SIMPROP_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STR_PROP_1" type="VARCHAR2(2048 CHAR)"/>
+            <column name="STR_PROP_2" type="VARCHAR2(2048 CHAR)"/>
+            <column name="STR_PROP_3" type="VARCHAR2(2048 CHAR)"/>
+            <column name="INT_PROP_1" type="NUMBER(10, 0)"/>
+            <column name="INT_PROP_2" type="NUMBER(10, 0)"/>
+            <column name="LONG_PROP_1" type="NUMBER(13, 0)"/>
+            <column name="LONG_PROP_2" type="NUMBER(13, 0)"/>
+            <column name="DEC_PROP_1" type="NUMBER(13, 4)"/>
+            <column name="DEC_PROP_2" type="NUMBER(13, 4)"/>
+            <column name="BOOL_PROP_1" type="VARCHAR2(4 CHAR)"/>
+            <column name="BOOL_PROP_2" type="VARCHAR2(4 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxDanylenko" id="11">
+        <createTable tablespace="${liquibase.dataTableSpace}" tableName="QRTZ_TRIGGERS">
+            <column name="SCHED_NAME" type="VARCHAR2(480 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR2(800 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR2(1000 CHAR)"/>
+            <column name="NEXT_FIRE_TIME" type="NUMBER(13, 0)"/>
+            <column name="PREV_FIRE_TIME" type="NUMBER(13, 0)"/>
+            <column name="PRIORITY" type="NUMBER(13, 0)"/>
+            <column name="TRIGGER_STATE" type="VARCHAR2(64 CHAR)"/>
+            <column name="TRIGGER_TYPE" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_TIME" type="NUMBER(13, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_TIME" type="NUMBER(13, 0)"/>
+            <column name="CALENDAR_NAME" type="VARCHAR2(800 CHAR)"/>
+            <column name="MISFIRE_INSTR" type="NUMBER(2, 0)"/>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

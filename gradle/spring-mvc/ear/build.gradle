@@ -1,0 +1,13 @@
+apply plugin: 'ear'
+
+dependencies {
+    deploy project(path: ':web', configuration: 'archives')
+}
+
+ear {
+    archiveName = "app.ear"
+
+    appDirName 'src/main/application' // use application metadata found in this folder
+
+    libDirName "APP-INF/lib" // put dependent libraries into APP-INF/lib inside the generated EAR
+}

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Application DB-->
+    <bean id="geminiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef" value="true" />
+        <property name="jndiName" value="jndi/geminiDb" />
+    </bean>
+
+    <!-- KCP MS DataSource-->
+    <bean id="kcpDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef" value="true" />
+        <property name="jndiName" value="jndi/kcpDb" />
+    </bean>
+
+    <!--MAIN DATA-->
+    <bean id="mainDataDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef" value="true" />
+        <property name="jndiName" value="jndi/mainData" />
+    </bean>
+
+    <bean id="geminiSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="geminiDataSource"/>
+        <property name="packagesToScan" value="com.db.sau.gemini.service.domain"/>
+        <property name="annotatedPackages" value="com.db.sau.gemini.service.domain"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+                <prop key="hibernate.default_schema">HORD04_OWNER</prop>
+                <prop key="hibernate.jdbc.batch_size">20</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">false</prop>
+            </props>
+        </property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="geminiTxManager"/>
+
+    <bean id="geminiTxManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="geminiSessionFactory"/>
+    </bean>
+
+    <bean id="geminiJdbcTemplate" scope="prototype" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="geminiDataSource" />
+        <property name="fetchSize" value="2000" />
+    </bean>
+
+    <bean id="kcpJdbcTemplate" scope="prototype" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="kcpDataSource" />
+        <property name="fetchSize" value="10000" />
+    </bean>
+
+    <bean id="mainDataJdbcTemplate" scope="prototype" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="mainDataDataSource" />
+        <property name="fetchSize" value="10000" />
+    </bean>
+
+</beans>

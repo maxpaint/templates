@@ -1,0 +1,45 @@
+sourceCompatibility = "${javaVersion}"
+targetCompatibility = "${javaVersion}"
+
+archivesBaseName = 'service'
+
+configurations {
+    all*.exclude group: "org.mockito", module: "mockito-all"
+    all*.exclude group: "javax.servlet", module: "servlet-api"
+    all*.exclude group: "log4j", module: "log4j"
+    all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
+dependencies {
+    compile libs.spring_core
+
+    compile libs.spring_web
+
+    compile libs.spring_security
+
+    compile libs.spring_aop
+
+    compile libs.servlet_api
+
+    compile libs.orm
+
+    compile libs.common
+
+    compile libs.logging
+
+    compile libs.messaging
+
+    compile libs.jackson
+
+    testCompile libs.testing
+
+}
+
+jar {
+    exclude {
+        props -> (
+                        props.file.name.equals('app.properties')
+                        || props.file.name.equals('log4j2.xml')
+        )
+    }
+}

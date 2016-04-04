@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="appDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef" value="true" />
+        <property name="jndiName" value="jndi/appDb" />
+    </bean>
+
+    <bean id="appSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="packagesToScan" value="com.maxdanylenko.core.domain"/>
+        <property name="annotatedPackages" value="com.maxdanylenko.core.domain"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+                <prop key="hibernate.jdbc.batch_size">20</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">false</prop>
+            </props>
+        </property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="appTxManager"/>
+
+    <bean id="appTxManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="appSessionFactory"/>
+    </bean>
+
+    <bean id="appJdbcTemplate" scope="prototype" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="appDataSource" />
+        <property name="fetchSize" value="2000" />
+    </bean>
+
+</beans>

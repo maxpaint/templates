@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Don't forget to set system property -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector to make all loggers asynchronous. -->
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd/MMM/yyyy hh:mm:ss.S} %X{sessionId} %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="GEMINI_FILE" fileName="../logs/gemini.log" filePattern="../logs/gemini.log.%d{yyyy-MM-dd}"
+                     append="true">
+            <PatternLayout>
+                <Pattern>%d{dd/MMM/yyyy hh:mm:ss.S} %X{sessionId} %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="40 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="GEMINI_ERRORS_FILE" fileName="../logs/gemini_errors.log"
+                     filePattern="../logs/gemini_errors.log.%d{yyyy-MM-dd}" append="true">
+            <PatternLayout>
+                <Pattern>%d{dd/MMM/yyyy hh:mm:ss.S} [%t] %X{sessionId} %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="40 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- Async Appenders -->
+        <Async name="ASYNC_STDOUT" bufferSize="500">
+            <AppenderRef ref="STDOUT"/>
+        </Async>
+
+        <Async name="ASYNC_GEMINI_FILE" bufferSize="500">
+            <AppenderRef ref="GEMINI_FILE"/>
+        </Async>
+
+        <Async name="ASYNC_GEMINI_ERRORS_FILE" bufferSize="500">
+            <AppenderRef ref="GEMINI_ERRORS_FILE"/>
+        </Async>
+
+        <File name="SYSLOG_FILE" fileName="../logs/syslog.log">
+            <PatternLayout>
+                <Pattern>%m</Pattern>
+            </PatternLayout>
+        </File>
+
+        <Syslog name="SYSLOG"
+                host="127.0.0.1"
+                port="514"
+                protocol="UDP"
+                facility="local7">
+            <PatternLayout>
+                <Pattern>%m</Pattern>
+            </PatternLayout>
+        </Syslog>
+
+    </Appenders>
+
+    <Loggers>
+        <!-- gemini -->
+        <Logger name="com.db.sau.gemini" level="INFO"/>
+
+        <!--Arcsigh-->
+        <logger name="ArcsightLogger" level="INFO, DEBUG">
+            <appender-ref ref="SYSLOG"/>
+            <appender-ref ref="SYSLOG_FILE"/>
+        </logger>
+
+        <!-- third party -->
+        <Logger name="org.hibernate.tool.hbm2ddl.TableMetadata" level="WARN"/>
+        <Logger name="org.springframework.security" level="WARN"/>
+        <Logger name="org.apache.commons.jexl2" level="ERROR"/>
+        <Logger name="org.hibernate.loader.Loader" level="ERROR"/>
+        <Logger name="org.springframework" level="ERROR"/>
+        <Logger name="org.apache.commons" level="ERROR"/>
+        <Logger name="org.hibernate" level="ERROR"/>
+        <Logger name="org.quartz" level="ERROR"/>
+
+        <!--Debug Hibernate SQL parameters-->
+        <!--<Logger name="org.hibernate.type" level="TRACE"/>-->
+        <!-- <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/> -->
+
+        <Root level="INFO">
+            <AppenderRef ref="ASYNC_STDOUT"/>
+            <AppenderRef ref="ASYNC_GEMINI_FILE"/>
+            <AppenderRef ref="ASYNC_GEMINI_ERRORS_FILE" level="ERROR"/>
+        </Root>
+    </Loggers>
+</Configuration>
