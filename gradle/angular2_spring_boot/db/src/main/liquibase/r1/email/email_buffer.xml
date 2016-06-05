@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="maxDanylenko" id="1">
+        <createSequence sequenceName="EMAIL_BUFFER_SEQ"/>
+        <rollback>
+            <dropSequence sequenceName="EMAIL_BUFFER_SEQ"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="maxDanylenko" id="2">
+        <createTable tableName="EMAIL_BUFFER" tablespace="${liquibase.dataTableSpace}">
+            <column name="ID" type="NUMBER(19, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCATION" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OCCURS_DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="CLOB"/>
+            <column name="EXCEPTION" type="CLOB"/>
+            <column name="SEND_STATUS" type="VARCHAR2(10 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="EMAIL_BUFFER"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="maxDanylenko" id="3">
+        <addPrimaryKey columnNames="ID" constraintName="EMAIL_BUFFER_PK" tableName="EMAIL_BUFFER" tablespace="${liquibase.indexTableSpace}"/>
+
+        <rollback>
+            <dropPrimaryKey tableName="EMAIL_BUFFER" constraintName="EMAIL_BUFFER_PK"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

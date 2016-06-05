@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+				   
+	<changeSet id="10000000" author="post.run" runAlways="true">
+        <validCheckSum>ANY</validCheckSum>
+		<sql stripComments="true" splitStatements="false">
+			<![CDATA[
+				DECLARE         
+					S_COMMAND VARCHAR2(500);  
+
+					s_role_U  varchar2(100) := '${liquibase.updateUser.name}';
+				--  read only table grants
+				begin 
+
+
+
+				--update user table grants
+				for i in ( select table_name  from  user_tables  )          
+				loop     
+					s_command :=  ' grant SELECT, INSERT, UPDATE, DELETE  on    ' ||  i.table_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+				end loop ;
+ 
+				 --update user select on all sequences
+  				for i in ( select sequence_name from  user_sequences  )          
+   				loop     
+					s_command :=  ' grant select    on    ' ||  i.sequence_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+ 				end loop ;
+
+ 				--update user execute on all functions
+  				for i in (   select OBJECT_NAME  from  user_objects where object_type='FUNCTION'  )          
+   				loop     
+					s_command :=  ' grant execute   on    ' ||  i.object_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+ 				end loop ;
+ 
+
+ 				-- update user execute on all packages
+  				for i in (   select OBJECT_NAME  from  user_objects where object_type='PACKAGE'  )          
+   				loop     
+					s_command :=  ' grant execute   on    ' ||  i.object_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+ 				end loop ;
+ 
+   				for i in (   select OBJECT_NAME  from  user_objects where object_type='PROCEDURE'  )          
+   				loop     
+					s_command :=  ' grant execute   on    ' ||  i.object_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+ 				end loop ;
+ 
+    			for i in (select object_name view_name from user_objects where object_type = 'VIEW' and status = 'VALID')          
+				loop     
+					s_command :=  ' grant select    on    ' ||  i.view_name  || ' to '||  s_role_u      ;   
+					execute immediate s_command;   
+				end loop ;
+ 
+				end  ; 
+			]]>
+		</sql>
+        <rollback/>
+	</changeSet>	
+	
+
+
+</databaseChangeLog>

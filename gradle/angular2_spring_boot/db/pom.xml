@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.maxDanylenko.sql</groupId>
+    <artifactId>Apps-Database</artifactId>
+    <packaging>jar</packaging>
+    <version>3.0.0-SNAPSHOT</version>
+    <name>App Database Module</name>
+
+    <!--
+        This project configuration is now used for migrating schema
+        changes to the various environments. This uses the Liquibase
+        plugin for Maven.
+
+        Example usage for updating schema:
+
+        $ mvn install -Pdev1 -Dschema=APP06
+
+        This will use the property configuration profile for APP1 and
+        username and schema APP06_OWNER. The profile simply specifies
+        common liquibase configuration properties, and are not
+        necessary.
+
+        Example usage for installing schema (on a new database):
+
+        $ mvn install -Pdev1,install -Dschema=APP06
+
+        All Liquibase plugin properties can be explicitly set on the
+        command line like so:
+
+        $ mvn install \
+                    -Dliquibase.url=jdbc:oracle:thin:@ \
+                    -Dliquibase.username=APP06_OWNER \
+                    -Dliquibase.password=PUT_PASSWORD_HERE \
+                    -Dliquibase.defaultSchemaName=APP06_OWNER \
+                    -Dliquibase.dataTableSpace= \
+                    -Dliquibase.lobTableSpace= \
+                    -Dliquibase.indexTableSpace=
+
+        Or, you can use a combination of the 2 methods, specifying the
+        profile and then using a specific property on the command line to
+        override the profile property.
+
+        Note: The "schema" property has been created as a convenience, since multiple
+        configurable properties use this as a prefix (ex: HRZ06_DATA01).
+
+        See the maven plugin documentation for more details and additional
+        goals and properties:
+
+        http://liquibase.org/manual/maven
+    -->
+
+    <properties>
+        <liquibase.changeLogFile>target/classes/install.xml</liquibase.changeLogFile>
+        <liquibase.driver>oracle.jdbc.OracleDriver</liquibase.driver>
+        <liquibase.promptOnNonLocalDatabase>false</liquibase.promptOnNonLocalDatabase>
+        <!-- The following properties have a common structure, but can be overidden -->
+        <liquibase.username>${schema}_OWNER</liquibase.username>
+        <liquibase.readUser.name>${schema}_USER</liquibase.readUser.name>
+        <liquibase.readUser.password>${schema}</liquibase.readUser.password>
+        <liquibase.defaultSchemaName>${schema}_OWNER</liquibase.defaultSchemaName>
+        <liquibase.dataTableSpace>${schema}_DATA01</liquibase.dataTableSpace>
+        <liquibase.lobTableSpace>${schema}_LOB01</liquibase.lobTableSpace>
+        <liquibase.indexTableSpace>${schema}_INDX01</liquibase.indexTableSpace>
+        <default.error.handling>ALWAYS</default.error.handling>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>rollback</id>
+            <properties>
+                <liquibase.changeLogFile>target/classes/rollback.xml</liquibase.changeLogFile>
+            </properties>
+        </profile>
+
+        <!-- dev 1 -->
+        <!-- mvn install -Pdev1-->
+        <profile>
+            <id>dev1</id>
+            <properties>
+                <liquibase.changeLogFile>target/classes/install.xml</liquibase.changeLogFile>
+                <liquibase.url>jdbc:oracle:thin:@localhost:1521/orcl12</liquibase.url>
+                <liquibase.defaultSchemaName>DEV1_OWNER</liquibase.defaultSchemaName>
+                <liquibase.username>DEV1_OWNER</liquibase.username>
+                <liquibase.password>dev1</liquibase.password>
+
+                <liquibase.updateUser.name>DEV1_USER</liquibase.updateUser.name>
+                <liquibase.updateUser.password>dec1_user</liquibase.updateUser.password>
+
+                <liquibase.appUser>DEV1_OWNER</liquibase.appUser>
+
+                <liquibase.clearCheckSums>false</liquibase.clearCheckSums>
+                <liquibase.dataTableSpace>tbs_dev_1</liquibase.dataTableSpace>
+                <liquibase.indexTableSpace>tbs_dev_1</liquibase.indexTableSpace>
+                <liquibase.lobTableSpace>tbs_dev_1</liquibase.lobTableSpace>
+
+                <oracle.database>DEV1_OWNER</oracle.database>
+                <oracle.username>DEV1_OWNER</oracle.username>
+                <oracle.password>dev1</oracle.password>
+
+
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <testResources>
+            <testResource>
+                <directory>src/test/clojure</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>liquibase.databaseChangeLogTableName</name>
+                                    <value>APP_CHANGE_LOG</value>
+                                </property>
+
+                                <property>
+                                    <name>liquibase.databaseChangeLogLockTableName</name>
+                                    <value>APP_CHANGE_LOCK</value>
+                                </property>
+                                <property>
+                                    <name>liquibase.tablespaceName</name>
+                                    <value>${liquibase.dataTableSpace}</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <url>${liquibase.url}</url>
+                    <driver>${liquibase.driver}</driver>
+                    <delimiter>/</delimiter>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-synonyms-for-update-user</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <username>${liquibase.updateUser.name}</username>
+                            <password>${liquibase.updateUser.password}</password>
+                            <srcFiles>
+                                <srcFile>src/main/sql/synonyms_USERS.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.oracle</groupId>
+                        <artifactId>ojdbc6</artifactId>
+                        <version>11.2.0.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>-->
+
+
+            <plugin>
+                <groupId>com.soebes.maven.plugins</groupId>
+                <artifactId>maven-echo-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>echo</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <echos>
+                        <echo>tag database with number: ${svnInfo.committedRevision}</echo>
+                    </echos>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.4.2</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <dataOutputDirectory>${project.build.directory}/liquibase-output</dataOutputDirectory>
+                            <contexts>${run.context}</contexts>
+                        </configuration>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.liquibase.ext</groupId>
+                        <artifactId>liquibase-oracle</artifactId>
+                        <version>3.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>com.theoryinpractise</groupId>
+                <artifactId>clojure-maven-plugin</artifactId>
+                <version>1.3.12</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/liquibase</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
